@@ -13,7 +13,7 @@
         <li><a href="#">Contacto</a></li>
     </ul>
     <h1>Insertar producto</h1>
-    <form action="INSERT">
+    <form action="form-product">
         <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
         <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
         <input type="text" id="descripcion" placeholder="INSERTA LA DESCRIPCIÓN DEL PRODUCTO">
@@ -38,8 +38,20 @@
           appId: "1:945383345070:web:e04885a7004ac2683a163f"
         };
       
-        // Initialize Firebase
+        // Initialize Firebase  
         const app = initializeApp(firebaseConfig);
+        const db=getFirestore(app);
+        const productform= document.getElementById("form-product");
+        productform.addEventListener("submit",async(e)=>{
+            e.preventDefault();
+        });
+        await addDoc(collection(db,"productos"),{
+            nombre:productform.nombre.value,
+            precio:productform.precio.value,
+            codigo: productform.codigo.value,
+            descripcion:productform.descripcion.value
+        });
+        productform.reset();
         </script>
     <!--FIN CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
 </body>
