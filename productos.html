@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>PRODUCTOS</title>
 </head>
 <body>
     <ul>
@@ -12,33 +12,35 @@
         <li><a href="#">Servicios</a></li>
         <li><a href="#">Contacto</a></li>
     </ul>
-    <form action="insert">
-        <input type="text" id="nombre" placeholder="Ingrese el nombre del producto">
-        <input type="text" id="precio" placeholder="Ingrese el precio del producto">
-        <input type="text" id="codigo" placeholder="Ingrese el codigo del producto">
+    <h1>Insertar producto</h1>
+    <form action="INSERT">
+        <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
+        <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
+        <input type="text" id="descripcion" placeholder="INSERTA LA DESCRIPCIÓN DEL PRODUCTO">
         <button type="submit">Agregar producto</button>
     </form>
+    <!--ESTA ES LA CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
     <script type="module">
         // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://firebase.google.com/docs/web/setup#available-libraries";
-        import{getFirestore, Collection,addDoc,onSnapshot,deleteDoc,doc}
-        from "https://firebase.google.com/docs/web/setup#available-libraries"
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        //IMPORTACIÓN DE LIBRERÍAS //CONFIGURACIONES lo que esta en {}
+        import {getFirestore,collection,addDoc,onSnapshot,deleteDoc,doc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
-    
+        
         // Your web app's Firebase configuration
         const firebaseConfig = {
-        apiKey: "AIzaSyDB9MjtSwsdCitnYdG8Wx2x2Mln1OIc2U0",
-        authDomain: "cliente-f36a5.firebaseapp.com",
-        projectId: "cliente-f36a5",
-        storageBucket: "cliente-f36a5.appspot.com",
-        messagingSenderId: "1042894471099",
-        appId: "1:1042894471099:web:6d64143533d372427c8e9e"
+            apiKey: "AIzaSyAe5b_zXwNkzDWq0rOWYAJ19931g7rA8gY",
+          authDomain: "crud-fd4a8.firebaseapp.com",
+          projectId: "crud-fd4a8",
+          storageBucket: "crud-fd4a8.appspot.com",
+          messagingSenderId: "945383345070",
+          appId: "1:945383345070:web:e04885a7004ac2683a163f"
         };
-    
+      
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-    </script>
+        </script>
+    <!--FIN CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
 </body>
-
 </html>
