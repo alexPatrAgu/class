@@ -13,7 +13,7 @@
         <li><a href="#">Contacto</a></li>
     </ul>
     <h1>Insertar producto</h1>
-    <form action="form-product">
+    <form id="productos">
         <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
         <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
         <button type="submit">Agregar producto</button>
@@ -45,8 +45,8 @@
             e.preventDefault();
         });
         await addDoc(collection(db,"productos"),{
-            nombre:productform.nombre.value,
-            precio:productform.precio.value,
+            nombre:productos.nombre.value,
+            precio:productos.precio.value,
         });
         productform.reset();
         </script>
