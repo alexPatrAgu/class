@@ -16,8 +16,6 @@
     <form action="form-product">
         <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
         <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
-        <input type="text" id="codigo" placeholder="INSERTA EL CODIGO DEL PRODUCTOA">
-        <input type="text" id="descripcion" placeholder="INSERTA LA DESCRIPCIÓN DEL PRODUCTO">
         <button type="submit">Agregar producto</button>
     </form>
     <!--ESTA ES LA CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
@@ -49,8 +47,6 @@
         await addDoc(collection(db,"productos"),{
             nombre:productform.nombre.value,
             precio:productform.precio.value,
-            codigo: productform.codigo.value,
-            descripcion:productform.descripcion.value
         });
         productform.reset();
         </script>
