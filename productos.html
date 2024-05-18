@@ -12,19 +12,29 @@
         <li><a href="#">Servicios</a></li>
         <li><a href="#">Contacto</a></li>
     </ul>
-    <h1>Insertar producto</h1>
-    <form id="productos">
-        <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
-        <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
-        <button type="submit">Agregar producto</button>
-    </form>
+    <h1>Productos</h1>
+    <div>
+        <h2>Agregar Producto</h2>
+        <form id="productos">
+            <input type="text" id="nombre" placeholder="Nombre del Producto">
+            <input type="text" id="precio" placeholder="Precio del Producto">
+            <button type="submit">Agregar Producto</button>
+        </form>
+    </div>
 
-    <h2>Lista de productos</h2>
-    <ul id="lista-productos"></ul>
+    <div>
+        <h2>Buscar Producto</h2>
+        <input type="text" id="buscarInput" placeholder="Buscar por nombre...">
+        <button onclick="buscarProducto()">Buscar</button>
+    </div>
+
+    <div id="resultadoBusqueda">
+        <!-- Aquí se mostrarán los resultados de la búsqueda -->
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
@@ -38,12 +48,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Obtener referencia a la lista de productos
-        const listaProductos = document.getElementById("lista-productos");
-
-        // Función para renderizar los productos en la lista
-        function renderProductos(querySnapshot) {
-            listaProductos.innerHTML = "";
+        // Función para renderizar los productos
+        function renderProductos(querySnapshot, container) {
+            container.innerHTML = "";
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
                 const li = document.createElement("li");
@@ -53,13 +60,32 @@
                 btnEliminar.addEventListener("click", () => {
                     deleteDoc(doc.ref);
                 });
+                const btnModificar = document.createElement("button");
+                btnModificar.textContent = "Modificar";
+                btnModificar.addEventListener("click", () => {
+                    // Aquí puedes implementar la lógica para modificar el producto
+                    // Puedes abrir un modal o un formulario para editar el producto
+                    // y luego actualizar el documento en Firebase
+                });
                 li.appendChild(btnEliminar);
-                listaProductos.appendChild(li);
+                li.appendChild(btnModificar);
+                container.appendChild(li);
             });
         }
 
-        // Mostrar productos al cargar la página y en tiempo real
-        onSnapshot(collection(db, "productos"), renderProductos);
+        // Función para buscar un producto por nombre
+        async function buscarProducto() {
+            const buscarInput = document.getElementById("buscarInput");
+            const querySnapshot = await getDocs(query(collection(db, "productos"), where("nombre", "==", buscarInput.value)));
+            const resultadoBusqueda = document.getElementById("resultadoBusqueda");
+            renderProductos(querySnapshot, resultadoBusqueda);
+        }
+
+        // Mostrar todos los productos al cargar la página
+        onSnapshot(collection(db, "productos"), (querySnapshot) => {
+            const listaProductos = document.getElementById("lista-productos");
+            renderProductos(querySnapshot, listaProductos);
+        });
 
         // Agregar producto
         const productForm = document.getElementById("productos");
