@@ -51,7 +51,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyDB9MjtSwsdCitnYdG8Wx2x2Mln1OIc2U0",
             authDomain: "cliente-f36a5.firebaseapp.com",
@@ -95,7 +95,9 @@
         });
 
         async function eliminarProducto(id) {
-            await deleteDoc(doc(db, "productos", id));
+            if (confirm("¿Seguro que deseas eliminar este producto?")) {
+                await deleteDoc(doc(db, "productos", id));
+            }
         }
 
         async function modificarProducto(id, nombre, precio) {
@@ -106,6 +108,7 @@
                     nombre: nuevoNombre,
                     precio: nuevoPrecio
                 });
+                alert("Producto modificado correctamente.");
             }
         }
 
