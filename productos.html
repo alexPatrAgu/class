@@ -4,20 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRODUCTOS</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
 </head>
 <body>
     <ul>
@@ -34,24 +20,13 @@
     </form>
 
     <h2>Lista de productos</h2>
-    <table id="tabla-productos">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="lista-productos"></tbody>
-    </table>
-
-    <input type="text" id="busqueda" placeholder="Buscar producto...">
-    <button id="btnBuscar">Buscar</button>
+    <ul id="lista-productos"></ul>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+        // Configuración de Firebase
         const firebaseConfig = {
         apiKey: "AIzaSyDB9MjtSwsdCitnYdG8Wx2x2Mln1OIc2U0",
         authDomain: "cliente-f36a5.firebaseapp.com",
@@ -63,27 +38,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Obtener referencia a la lista de productos
         const listaProductos = document.getElementById("lista-productos");
 
+        // Función para renderizar los productos en la lista
         function renderProductos(querySnapshot) {
             listaProductos.innerHTML = "";
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${producto.nombre}</td>
-                    <td>${producto.precio}</td>
-                    <td>
-                        <button onclick="eliminarProducto('${doc.id}')">Eliminar</button>
-                        <button onclick="modificarProducto('${doc.id}', '${producto.nombre}', '${producto.precio}')">Modificar</button>
-                    </td>
-                `;
-                listaProductos.appendChild(tr);
+                const li = document.createElement("li");
+                li.textContent = ${producto.nombre} - ${producto.precio};
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.addEventListener("click", () => {
+                    deleteDoc(doc.ref);
+                });
+                li.appendChild(btnEliminar);
+                listaProductos.appendChild(li);
             });
         }
 
+        // Mostrar productos al cargar la página y en tiempo real
         onSnapshot(collection(db, "productos"), renderProductos);
 
+        // Agregar producto
         const productForm = document.getElementById("productos");
         productForm.addEventListener("submit", async(e) => {
             e.preventDefault();
@@ -93,28 +71,6 @@
             });
             productForm.reset();
         });
-
-        async function eliminarProducto(id) {
-            if (confirm("¿Seguro que deseas eliminar este producto?")) {
-                await deleteDoc(doc(db, "productos", id));
-                alert("Producto eliminado correctamente.");
-            }
-        }
-
-        async function modificarProducto(id, nombre, precio) {
-            const nuevoNombre = prompt("Ingrese el nuevo nombre:", nombre);
-            const nuevoPrecio = prompt("Ingrese el nuevo precio:", precio);
-            if (nuevoNombre !== null && nuevoPrecio !== null) {
-                await updateDoc(doc(db, "productos", id), {
-                    nombre: nuevoNombre,
-                    precio: nuevoPrecio
-                });
-                alert("Producto modificado correctamente.");
-            }
-        }
-
-        const btnBuscar = document.getElementById("btnBuscar");
-        btnBuscar.addEventListener("click", async () => {
-            const valorBusqueda = document.getElementById("busqueda").value.trim().toLowerCase();
-            const q = query(collection(db, "productos"), where("nombre", ">=", valorBusqueda));
-       
+    </script>
+</body>
+</html>
