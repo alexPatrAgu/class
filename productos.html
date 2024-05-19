@@ -47,7 +47,7 @@
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
                 const li = document.createElement("li");
-                li.textContent = ${producto.nombre} - ${producto.precio};
+                li.textContent = `${producto.nombre} - ${producto.precio}`;
                 const btnEliminar = document.createElement("button");
                 btnEliminar.textContent = "Eliminar";
                 btnEliminar.addEventListener("click", () => {
