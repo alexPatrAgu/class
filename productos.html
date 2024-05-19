@@ -20,40 +20,49 @@
     </form>
 
     <h2>Lista de productos</h2>
-    <input type="text" id="input-busqueda" placeholder="Buscar producto...">
     <ul id="lista-productos"></ul>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
-            apiKey: "TU_API_KEY",
-            authDomain: "TU_AUTH_DOMAIN",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_STORAGE_BUCKET",
-            messagingSenderId: "TU_MESSAGING_SENDER_ID",
-            appId: "TU_APP_ID"
+        apiKey: "AIzaSyDB9MjtSwsdCitnYdG8Wx2x2Mln1OIc2U0",
+        authDomain: "cliente-f36a5.firebaseapp.com",
+        projectId: "cliente-f36a5",
+        storageBucket: "cliente-f36a5.appspot.com",
+        messagingSenderId: "1042894471099",
+        appId: "1:1042894471099:web:6d64143533d372427c8e9e"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         const listaProductos = document.getElementById("lista-productos");
-        const inputBusqueda = document.getElementById("input-busqueda");
 
-        async function renderProductos() {
+        function renderProductos(querySnapshot) {
             listaProductos.innerHTML = "";
-            const querySnapshot = await getDocs(collection(db, "productos"));
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
                 const li = document.createElement("li");
-                li.textContent = `${producto.nombre} - ${producto.precio}`;
+                li.textContent = ${producto.nombre} - ${producto.precio};
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.addEventListener("click", () => {
+                    eliminarProducto(doc.id);
+                });
+                const btnModificar = document.createElement("button");
+                btnModificar.textContent = "Modificar";
+                btnModificar.addEventListener("click", () => {
+                    modificarProducto(doc.id, producto.nombre, producto.precio);
+                });
+                li.appendChild(btnEliminar);
+                li.appendChild(btnModificar);
                 listaProductos.appendChild(li);
             });
         }
 
-        renderProductos();
+        onSnapshot(collection(db, "productos"), renderProductos);
 
         const productForm = document.getElementById("productos");
         productForm.addEventListener("submit", async(e) => {
@@ -62,25 +71,31 @@
                 nombre: productForm.nombre.value,
                 precio: productForm.precio.value
             });
-            renderProductos();
             productForm.reset();
         });
 
-        inputBusqueda.addEventListener("input", async () => {
-            const valorBusqueda = inputBusqueda.value.trim().toLowerCase();
-            if (valorBusqueda === "") {
-                renderProductos();
-                return;
+        async function eliminarProducto(id) {
+            try {
+                await deleteDoc(doc(db, "productos", id));
+            } catch (error) {
+                console.error("Error al eliminar el producto:", error);
             }
-            listaProductos.innerHTML = "";
-            const querySnapshot = await getDocs(query(collection(db, "productos"), where("nombre", ">=", valorBusqueda)));
-            querySnapshot.forEach(doc => {
-                const producto = doc.data();
-                const li = document.createElement("li");
-                li.textContent = `${producto.nombre} - ${producto.precio}`;
-                listaProductos.appendChild(li);
-            });
-        });
+        }
+
+        async function modificarProducto(id, nombreActual, precioActual) {
+            const nuevoNombre = prompt("Ingrese el nuevo nombre:", nombreActual);
+            const nuevoPrecio = prompt("Ingrese el nuevo precio:", precioActual);
+            if (nuevoNombre !== null && nuevoPrecio !== null) {
+                try {
+                    await updateDoc(doc(db, "productos", id), {
+                        nombre: nuevoNombre,
+                        precio: nuevoPrecio
+                    });
+                } catch (error) {
+                    console.error("Error al modificar el producto:", error);
+                }
+            }
+        }
     </script>
 </body>
 </html>
