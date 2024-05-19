@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRODUCTOS</title>
+    <style>
+        /* Estilos para la tabla */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <ul>
@@ -20,11 +35,24 @@
     </form>
 
     <h2>Lista de productos</h2>
-    <ul id="lista-productos"></ul>
+    <!-- Agregamos una tabla para mostrar los productos -->
+    <table id="tabla-productos">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="lista-productos"></tbody>
+    </table>
+
+    <!-- Agregamos un campo de búsqueda -->
+    <input type="text" id="busqueda" placeholder="Buscar productos...">
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
@@ -40,21 +68,24 @@
 
         // Obtener referencia a la lista de productos
         const listaProductos = document.getElementById("lista-productos");
+        const tablaProductos = document.getElementById("tabla-productos");
 
         // Función para renderizar los productos en la lista
         function renderProductos(querySnapshot) {
             listaProductos.innerHTML = "";
+            tablaProductos.innerHTML = ""; // Limpiamos la tabla antes de volver a renderizarla
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
-                const li = document.createElement("li");
-                li.textContent = `${producto.nombre} - ${producto.precio}`;
-                const btnEliminar = document.createElement("button");
-                btnEliminar.textContent = "Eliminar";
-                btnEliminar.addEventListener("click", () => {
-                    deleteDoc(doc.ref);
-                });
-                li.appendChild(btnEliminar);
-                listaProductos.appendChild(li);
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${producto.nombre}</td>
+                    <td>${producto.precio}</td>
+                    <td>
+                        <button onclick="eliminarProducto('${doc.id}')">Eliminar</button>
+                        <button onclick="modificarProducto('${doc.id}', '${producto.nombre}', '${producto.precio}')">Modificar</button>
+                    </td>
+                `;
+                tablaProductos.appendChild(tr);
             });
         }
 
@@ -70,6 +101,32 @@
                 precio: productForm.precio.value
             });
             productForm.reset();
+        });
+
+        // Función para eliminar un producto
+        async function eliminarProducto(id) {
+            await deleteDoc(doc(db, "productos", id));
+        }
+
+        // Función para modificar un producto
+        async function modificarProducto(id, nombre, precio) {
+            const nuevoNombre = prompt("Ingrese el nuevo nombre:", nombre);
+            const nuevoPrecio = prompt("Ingrese el nuevo precio:", precio);
+            if (nuevoNombre !== null && nuevoPrecio !== null) {
+                await db.collection("productos").doc(id).set({
+                    nombre: nuevoNombre,
+                    precio: nuevoPrecio
+                });
+            }
+        }
+
+        // Agregar funcionalidad de búsqueda
+        const campoBusqueda = document.getElementById("busqueda");
+        campoBusqueda.addEventListener("input", async () => {
+            const valorBusqueda = campoBusqueda.value.trim().toLowerCase();
+            const q = query(collection(db, "productos"), where("nombre", ">=", valorBusqueda));
+            const querySnapshot = await getDocs(q);
+            renderProductos(querySnapshot);
         });
     </script>
 </body>
