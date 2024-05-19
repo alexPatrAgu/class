@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PRODUCTOS</title>
     <style>
+        /* Estilos para los elementos de la lista */
+        .producto-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .producto-info {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .producto-buttons {
+            flex-shrink: 0;
+        }
+        /* Otros estilos */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -58,21 +74,6 @@
         }
         button:hover {
             background-color: #0056b3;
-        }
-        ul#lista-productos {
-            list-style-type: none;
-            padding: 0;
-            width: 50%;
-            margin: 20px auto;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        ul#lista-productos li {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            text-align: center;
         }
     </style>
 </head>
