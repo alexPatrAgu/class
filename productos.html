@@ -20,12 +20,11 @@
     </form>
 
     <h2>Lista de productos</h2>
-    <input type="text" id="input-busqueda" placeholder="Buscar producto...">
     <ul id="lista-productos"></ul>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
@@ -39,22 +38,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Obtener referencia a la lista de productos
         const listaProductos = document.getElementById("lista-productos");
-        const inputBusqueda = document.getElementById("input-busqueda");
 
-        async function renderProductos() {
+        // Función para renderizar los productos en la lista
+        function renderProductos(querySnapshot) {
             listaProductos.innerHTML = "";
-            const querySnapshot = await getDocs(collection(db, "productos"));
             querySnapshot.forEach(doc => {
                 const producto = doc.data();
                 const li = document.createElement("li");
                 li.textContent = `${producto.nombre} - ${producto.precio}`;
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.addEventListener("click", () => {
+                    eliminarProducto(doc.id); // Llamar a la función eliminarProducto con el ID del documento
+                });
+                li.appendChild(btnEliminar);
                 listaProductos.appendChild(li);
             });
         }
 
-        renderProductos();
+        // Mostrar productos al cargar la página y en tiempo real
+        onSnapshot(collection(db, "productos"), renderProductos);
 
+        // Agregar producto
         const productForm = document.getElementById("productos");
         productForm.addEventListener("submit", async(e) => {
             e.preventDefault();
@@ -62,25 +69,17 @@
                 nombre: productForm.nombre.value,
                 precio: productForm.precio.value
             });
-            renderProductos();
             productForm.reset();
         });
 
-        inputBusqueda.addEventListener("input", async () => {
-            const valorBusqueda = inputBusqueda.value.trim().toLowerCase();
-            if (valorBusqueda === "") {
-                renderProductos();
-                return;
+        // Función para eliminar un producto
+        async function eliminarProducto(id) {
+            try {
+                await deleteDoc(doc(db, "productos", id));
+            } catch (error) {
+                console.error("Error al eliminar el producto:", error);
             }
-            listaProductos.innerHTML = "";
-            const querySnapshot = await getDocs(query(collection(db, "productos"), where("nombre", ">=", valorBusqueda)));
-            querySnapshot.forEach(doc => {
-                const producto = doc.data();
-                const li = document.createElement("li");
-                li.textContent = `${producto.nombre} - ${producto.precio}`;
-                listaProductos.appendChild(li);
-            });
-        });
+        }
     </script>
 </body>
 </html>
