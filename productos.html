@@ -12,44 +12,91 @@
         <li><a href="#">Servicios</a></li>
         <li><a href="#">Contacto</a></li>
     </ul>
-    <h1>Insertar producto</h1>
-    <form id="productos">
-        <input type="text" id="nombre" placeholder="INSERTA EL NOMBRE DEL PRODUCTO">
-        <input type="text" id="precio" placeholder="INSERTA EL PRECIO DEL PRODUCTO">
-        <button type="submit">Agregar producto</button>
-    </form>
-    <!--ESTA ES LA CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-            import {getFirestore,collection,addDoc,onSnapshot,deleteDoc,doc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-            // TODO: Add SDKs for Firebase products that you want to use
-            // https://firebase.google.com/docs/web/setup#available-libraries
-          
-            // Your web app's Firebase configuration
-            const firebaseConfig = {
-              apiKey: "AIzaSyDB9MjtSwsdCitnYdG8Wx2x2Mln1OIc2U0",
-              authDomain: "cliente-f36a5.firebaseapp.com",
-              projectId: "cliente-f36a5",
-              storageBucket: "cliente-f36a5.appspot.com",
-              messagingSenderId: "1042894471099",
-              appId: "1:1042894471099:web:6d64143533d372427c8e9e"
-            };
-            
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
+    <h1>Productos</h1>
+    <div>
+        <h2>Agregar Producto</h2>
+        <form id="productos">
+            <input type="text" id="nombre" placeholder="Nombre del Producto">
+            <input type="text" id="precio" placeholder="Precio del Producto">
+            <button type="submit">Agregar Producto</button>
+        </form>
+    </div>
 
-            const db=getFirestore(app);
-            const productform= document.getElementById("productos");
-            productform.addEventListener("submit",async(e)=>{
-                e.preventDefault();
-                await addDoc(collection(db,"productos"),{
-                    nombre:productos.nombre.value,
-                    precio:productos.precio.value,
+    <div>
+        <h2>Buscar Producto</h2>
+        <input type="text" id="buscarInput" placeholder="Buscar por nombre...">
+        <button onclick="buscarProducto()">Buscar</button>
+    </div>
+
+    <div id="resultadoBusqueda">
+        <!-- Aquí se mostrarán los resultados de la búsqueda -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Función para renderizar los productos
+        function renderProductos(querySnapshot, container) {
+            container.innerHTML = "";
+            querySnapshot.forEach(doc => {
+                const producto = doc.data();
+                const li = document.createElement("li");
+                li.textContent = `${producto.nombre} - ${producto.precio}`;
+                const btnEliminar = document.createElement("button");
+                btnEliminar.textContent = "Eliminar";
+                btnEliminar.addEventListener("click", () => {
+                    deleteDoc(doc.ref);
                 });
-                e.reset();
+                const btnModificar = document.createElement("button");
+                btnModificar.textContent = "Modificar";
+                btnModificar.addEventListener("click", () => {
+                    // Aquí puedes implementar la lógica para modificar el producto
+                    // Puedes abrir un modal o un formulario para editar el producto
+                    // y luego actualizar el documento en Firebase
+                });
+                li.appendChild(btnEliminar);
+                li.appendChild(btnModificar);
+                container.appendChild(li);
             });
-          </script>
-    <!--FIN CONEXIÓN DE LA BASE DE DATOS DE FAREBASE-->
+        }
+
+        // Función para buscar un producto por nombre
+        async function buscarProducto() {
+            const buscarInput = document.getElementById("buscarInput");
+            const querySnapshot = await getDocs(query(collection(db, "productos"), where("nombre", "==", buscarInput.value)));
+            const resultadoBusqueda = document.getElementById("resultadoBusqueda");
+            renderProductos(querySnapshot, resultadoBusqueda);
+        }
+
+        // Mostrar todos los productos al cargar la página
+        onSnapshot(collection(db, "productos"), (querySnapshot) => {
+            const listaProductos = document.getElementById("lista-productos");
+            renderProductos(querySnapshot, listaProductos);
+        });
+
+        // Agregar producto
+        const productForm = document.getElementById("productos");
+        productForm.addEventListener("submit", async(e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "productos"), {
+                nombre: productForm.nombre.value,
+                precio: productForm.precio.value
+            });
+            productForm.reset();
+        });
+    </script>
 </body>
 </html>
