@@ -24,7 +24,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         // Configuración de Firebase
         const firebaseConfig = {
@@ -51,7 +51,7 @@
                 const btnEliminar = document.createElement("button");
                 btnEliminar.textContent = "Eliminar";
                 btnEliminar.addEventListener("click", () => {
-                    deleteDoc(doc.ref);
+                    eliminarProducto(doc.id); // Llamar a la función eliminarProducto con el ID del documento
                 });
                 li.appendChild(btnEliminar);
                 listaProductos.appendChild(li);
@@ -71,6 +71,15 @@
             });
             productForm.reset();
         });
+
+        // Función para eliminar un producto
+        async function eliminarProducto(id) {
+            try {
+                await deleteDoc(doc(db, "productos", id));
+            } catch (error) {
+                console.error("Error al eliminar el producto:", error);
+            }
+        }
     </script>
 </body>
 </html>
